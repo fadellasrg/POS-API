@@ -1,12 +1,27 @@
 const connection = require('../config/db')
 
+
 module.exports = {
-    modelAllHistory: (name, offset, limit) => {
+    modelAllHistoryForRedis: () => {
         return new Promise ((resolve, reject)=>{
-            connection.query(`SELECT CONCAT("#", invoice) invoice, cashier, DATE_FORMAT (date, '%d %M %Y') date, GROUP_CONCAT(name, ' ', qty, 'X') orders, 
+            connection.query(`SELECT invoice, cashier, DATE_FORMAT (date, '%d %M %Y') date, GROUP_CONCAT(name, ' ', qty, 'X') orders, 
+            SUM(price*qty) amount 
+            FROM tb_history LEFT JOIN tb_product ON tb_history.id_product = tb_product.id_product GROUP BY invoice `
+            ,(err, result)=>{
+                if(err){
+                    reject(new Error(err))
+                }else{
+                    resolve(result)
+                }
+            })
+        })
+    },
+    modelAllHistory: (searchParams, search, param, sort, offset, limit) => {
+        return new Promise ((resolve, reject)=>{
+            connection.query(`SELECT invoice, cashier, DATE_FORMAT (date, '%d %M %Y') date, GROUP_CONCAT(name, ' ', qty, 'X') orders, 
             SUM(price*qty) amount 
             FROM tb_history LEFT JOIN tb_product ON tb_history.id_product = tb_product.id_product 
-            WHERE invoice LIKE '%${name}%' GROUP BY invoice
+            WHERE ${searchParams} LIKE '%${search}%' GROUP BY invoice ORDER BY ${param} ${sort}
             LIMIT ${offset}, ${limit} `,
             (err, result)=>{
                 if(err){
@@ -17,13 +32,10 @@ module.exports = {
             })
         })
     },
-    modelDetailHistory: (id) => {
+    modelTotalHistory: (searchParams, search) => {
         return new Promise ((resolve, reject)=>{
-            connection.query(`SELECT * ,CONCAT("#", invoice) invoice, DATE_FORMAT (date, '%d %M %Y') date, 
-            DATE_FORMAT (create_at, '%d %M %Y') create_at
-            FROM tb_history
-            LEFT JOIN tb_product ON tb_history.id_product = tb_product.id_product
-            WHERE id = '${id}'`, (err, result)=>{
+            connection.query(`SELECT COUNT(*) as total FROM tb_history WHERE ${searchParams} LIKE '%${search}%' `
+            ,(err, result)=>{
                 if(err){
                     reject(new Error(err))
                 }else{
@@ -32,7 +44,53 @@ module.exports = {
             })
         })
     },
+    modelDetailHistory: (invoice) => {
+        return new Promise ((resolve, reject)=>{
+            connection.query(`SELECT * ,CONCAT("#", invoice) invoice, DATE_FORMAT (date, '%d %M %Y') date, 
+            DATE_FORMAT (create_at, '%d %M %Y') create_at
+            FROM tb_history
+            LEFT JOIN tb_product ON tb_history.id_product = tb_product.id_product
+            WHERE invoice LIKE '%${invoice}%'`, (err, result)=>{
+                if(err){
+                    reject(new Error(err))
+                }else{
+                    resolve(result)
+                }
+            })
+        })
+    },
+    // modelInsertHistory: (indeks) => {
+    //     return new Promise ((resolve, reject)=>{
+    //         connection.query(`INSERT INTO tb_history (invoice, cashier, id_product, qty)
+    //         VALUES ( '${indeks.invoice}', '${indeks.cashier}', '${indeks.id_product}', '${indeks.qty}' ) `
+    //         , (err, result)=>{
+    //             if(err){
+    //                 reject(new Error(err))
+    //             }else{
+    //                 resolve(result)
+    //             }
+    //             // console.log(indeks.invoice)
+    //         })
+    //     })
+    // },
+    // modelInsertHistory: (indeks) => {
+    //     return new Promise (async(resolve, reject)=>{
+    //     const coba = await modelDetailProducts(indeks.id_product).then(res => res)
+    //     console.log(coba)
+    //         connection.query(`INSERT INTO tb_history (invoice, cashier, id_product, qty)
+    //         VALUES ( '${indeks.invoice}', '${indeks.cashier}', '${indeks.id_product}', '${indeks.qty}' ) `
+    //         , (err, result)=>{
+    //             if(err){
+    //                 reject(new Error(err))
+    //             }else{
+    //                 resolve(result)
+    //             }
+    //             // console.log(indeks.invoice)
+    //         })
+    //     })
+    // },
     modelInsertHistory: (indeks) => {
+        // const coba = await modelDetailProducts(indeks.id_product).then(res => res)
         return new Promise ((resolve, reject)=>{
             connection.query(`INSERT INTO tb_history (invoice, cashier, id_product, qty)
             VALUES ( '${indeks.invoice}', '${indeks.cashier}', '${indeks.id_product}', '${indeks.qty}' ) `
@@ -42,10 +100,10 @@ module.exports = {
                 }else{
                     resolve(result)
                 }
-                // console.log(indeks.invoice)
+                    // console.log(indeks.invoice)
+                })
             })
-        })
-    },
+        },
     modelUpdateHistory: (data, id) => {
         return new Promise ((resolve, reject)=>{
             connection

@@ -1,9 +1,10 @@
 const mysql = require('mysql2')
+const { DB_USER, DB_PASSWORD } = require('../helpers/env')
 
 const connection = mysql.createConnection({
     host: 'localhost',
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+    user: DB_USER,
+    password: DB_PASSWORD,
     database: 'db_pos'
 })
 

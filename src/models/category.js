@@ -15,6 +15,18 @@ module.exports = {
             })
         })
     },
+    modelTotalCategory: () => {
+        return new Promise ((resolve, reject)=>{
+            connection.query(`SELECT COUNT(*) as total FROM tb_category `
+            ,(err, result)=>{
+                if(err){
+                    reject(new Error(err))
+                }else{
+                    resolve(result)
+                }
+            })
+        })
+    },
     modelDetailCategory: (id_category) => {
         return new Promise ((resolve, reject)=>{
             connection.query(`SELECT * FROM tb_category WHERE id_category = '${id_category}'`, (err, result)=>{

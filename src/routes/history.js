@@ -8,14 +8,16 @@ const{
     updateHistoryPatch,
     deleteHistory
 } = require('../controllers/history')
+const { authentication, authorizationAdmin, authorizationCashier } = require('../helpers/middleware/auth')
+const { getAllHistoryRedis } = require('../helpers/redis/history')
 
 routeHistory
-    .get('/history', getAllHistory)
-    .get('/detailHistory/:id', getDetailHistory)
-    .post('/history', insertHistory)
-    .put('/history/:id', updateHistory)
-    .patch('/history/:id', updateHistoryPatch)
-    .delete('/history/:id', deleteHistory)
+    .get('/history', authentication, getAllHistoryRedis, getAllHistory)             // access for admin & cashier
+    .get('/detailHistory/:id', authentication, getDetailHistory)                    // access for admin & cashier
+    .post('/history', authentication, authorizationCashier, insertHistory)          // access for cashier
+    .put('/history/:id', authentication, authorizationAdmin, updateHistory)         // access for admin
+    .patch('/history/:id', authentication, authorizationAdmin, updateHistoryPatch)  // access for admin
+    .delete('/history/:id', authentication, authorizationAdmin, deleteHistory)      // access for admin
 
     
 module.exports = routeHistory
