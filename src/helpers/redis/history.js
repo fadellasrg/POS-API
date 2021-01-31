@@ -6,7 +6,8 @@ module.exports = {
     getAllHistoryRedis: (req, res, next) => {
         client.get('dataHistory', (err, result) => {
             if(err){
-                failed(res, 'Internal server error', [])
+                // failed(res, 'Internal server error', [])
+                console.log(err)
             }else{
                 // data in redis
                 if(result){
