@@ -64,29 +64,6 @@ module.exports = {
             
             modelDetailProducts(id)
             .then((response)=>{
-                // looping -> to convert int to Rp.
-                // const arr = []
-                // for(let i = 0; i < response.length; i++){
-                //     const result = {
-                //     "id_product": response[i].id_product,
-                //     "name": response[i].name,
-                //     "image": response[i].image,
-                //     // "price": convertToRupiah(response[i].price),
-                //     "price": response[i].price,
-                //     "create_at": response[i].create_at,
-                //     "id_category": response[i].id_category,
-                //     "category": response[i].category
-                //     }
-                //     arr.push({
-                //         "id_product": result.id_product,
-                //         "name": result.name,
-                //         "image": result.image,
-                //         "price": result.price,
-                //         "create_at": result.create_at,
-                //         "id_category": result.id_category,
-                //         "category": result.category
-                //     })
-                // }
                 if(response.length > 0){
                     success(res, response, {}, 'Get detail product success')
                 }else{
@@ -114,13 +91,16 @@ module.exports = {
             //     multer: req.file.filename
             // })
             if(!data.name || !data.image || !data.price || !data.id_category || !data.images){
+                const path = `./public/images/${data.images}`
+                fs.unlinkSync(path)
                 failed(res, 'All textfield is required!', [])
+
             }else{
                 modelInsertProducts(data)
                 .then((response)=>{
                     module.exports.setDataRedis()
                     success(res, response, {}, 'Insert product success')
-                }).catch(()=>{
+                }).catch((err)=>{
                     failed(res, 'All textfield is required!', [])
                 })
             }
@@ -165,6 +145,10 @@ module.exports = {
             const detail = await modelDetailProducts(id)
             if(req.file){
                 data.images = req.file.filename
+                // const path = `${process.cwd()}/public/images/${detail[0].images}`
+                // if (fs.existsSync(path)) {
+                //     fs.unlinkSync(path)
+                // }
                 const path = `./public/images/${detail[0].images}`
                 fs.unlinkSync(path)
             }
@@ -173,7 +157,7 @@ module.exports = {
                 module.exports.setDataRedis()
                 success(res, response, {}, 'Update product success')
             }).catch((err)=>{
-                failed(res, 'Internal server error', [])
+                failed(res, 'Please input all field!', [])
             }) 
         } catch (error) {
             failed(res, 'Internal server error', [])

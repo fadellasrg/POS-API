@@ -15,11 +15,11 @@ module.exports = {
                     const search = req.query.search ? req.query.search : ''
                     const param = req.query.param ? req.query.param : 'id_product'
                     const sort = req.query.sort ? req.query.sort : 'asc'
-                    const limit = req.query.limit ? req.query.limit : 3
-                    const page = req.query.page ? req.query.page : 1
+                    const limit = req.query.limit ? Number(req.query.limit) : 3
+                    const page = req.query.page ? Number(req.query.page) : 1
                     const offset = page===1 ? 0 : (page-1)*limit    // start from ''
                     const filterData = _.filter(response, (item) => {
-                        return item[searchParams].toString().toLowerCase().includes(search.toLowerCase())
+                        return item[searchParams].toString().toLowerCase().includes(search.toString().toLowerCase())
                     })
                     if(filterData.length >= 1){
                         const sortData = _.orderBy(filterData, param, sort)

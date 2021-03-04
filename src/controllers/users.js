@@ -19,7 +19,9 @@ module.exports = {
                     const token = jwt.sign(dataUser, JWT_SECRET)
                     res.json({
                         message: 'Login success',
-                        token     // same property and value
+                        token,     // same property and value
+                        name: response[0].name
+                        // access
                     })
                     // success(res, `Token = ${token}`, {}, 'Login success')
                 }else{
@@ -47,11 +49,15 @@ module.exports = {
                     access: body.access,
                     password // same property and value
                 }
-                mRegister(user).then((response) => {
-                    success(res, {}, {}, 'Register success')
-                }).catch((err) => {
-                    failed(res, 'Internal server error', err)
-                })
+                if( !user.name || !user.email || !user.access || !user.password){
+                    failed(res, 'All textfield is required!', [])
+                }else{
+                    mRegister(user).then((response) => {
+                        success(res, {}, {}, 'Register success')
+                    }).catch((err) => {
+                        failed(res, 'Internal server error', err)
+                    })
+                }
             }
         }).catch((err) => {
             failed(res, 'Internal server error', err)

@@ -100,7 +100,8 @@ module.exports = {
                 }else{
                     resolve(result)
                 }
-                    // console.log(indeks.invoice)
+                    console.log(indeks.invoice)
+                    // console.log
                 })
             })
         },

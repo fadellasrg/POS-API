@@ -25,5 +25,6 @@ module.exports = {
             data
         }
         res.json(response)
+        // res.status(500).json(response)
     }
 }

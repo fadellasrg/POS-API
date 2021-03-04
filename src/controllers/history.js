@@ -92,12 +92,15 @@ module.exports = {
                 failed(res, 'All textfield is required!', [])
             }else{
                 data.forEach(async(indeks) => {
-                    await modelInsertHistory(indeks)
+                    await modelInsertHistory(indeks).then((response) => {
+                        return response
+                    }).catch((err) => {
+                        return err
+                    })
                 })
                 module.exports.setDataRedis()
                 success(res, {}, {}, 'Insert history success')
             }
-   
         } catch (error) {
             failed(res, 'Internal server error', [])
         }
