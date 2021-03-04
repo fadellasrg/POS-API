@@ -25,7 +25,7 @@ This is the backend service for this app. You can see the frontend service [here
     - `DB_USER` = fill with USERNAME in your database configuration.
     - `DB_PASSWORD` = fill with PASSWORD in your database configuration (or leave it null if your database doesn't have password).
     - `JWT_SECRET` = fill with the unique value due to signature verifier on JWT.
-5. Run `npm run start` or `nodemon`
+5. Run `npm run start`
 
 ## Documentation
 - [Postman](https://documenter.getpostman.com/view/13713483/TWDfDDVo)
