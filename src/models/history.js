@@ -4,7 +4,7 @@ const connection = require('../config/db')
 module.exports = {
     modelAllHistoryForRedis: () => {
         return new Promise ((resolve, reject)=>{
-            connection.query(`SELECT invoice, cashier, DATE_FORMAT (date, '%d %M %Y') date, GROUP_CONCAT(name, ' ', qty, 'X') orders, 
+            connection.query(`SELECT id, invoice, cashier, DATE_FORMAT (date, '%d %M %Y') date, GROUP_CONCAT(name, ' ', qty, 'X') orders, 
             SUM(price*qty) amount 
             FROM tb_history LEFT JOIN tb_product ON tb_history.id_product = tb_product.id_product GROUP BY invoice `
             ,(err, result)=>{
@@ -34,7 +34,9 @@ module.exports = {
     },
     modelTotalHistory: (searchParams, search) => {
         return new Promise ((resolve, reject)=>{
-            connection.query(`SELECT COUNT(*) as total FROM tb_history WHERE ${searchParams} LIKE '%${search}%' `
+            connection.query(`SELECT COUNT(*) as total FROM (
+                SELECT COUNT(id) FROM tb_history WHERE ${searchParams} LIKE '%${search}%' GROUP BY invoice
+            ) tb_history `
             ,(err, result)=>{
                 if(err){
                     reject(new Error(err))
