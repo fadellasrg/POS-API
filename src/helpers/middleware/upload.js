@@ -33,7 +33,7 @@ const singleUpload = (req, res, next) => {
     const multerSingle = multerUpload.single('image')   // 'image' = field name in body
     multerSingle(req, res, (err) => {
         if(err){
-            failed(res, 'Upload failed', err)
+            failed(res, 'Upload failed, check your file type or size', err)
         }else{
             next()
         }

@@ -9,6 +9,7 @@ const { PORT } = require('./src/helpers/env')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
+const history = require('connect-history-api-fallback')
 
 app.use(morgan('dev'))
 app.use(cors())
@@ -21,6 +22,10 @@ app.use(userRoute)
 // open route for public image
 app.use('/images', express.static('./public/images'))
 
+app.use(history({
+    verbose: true
+}))
+app.use('/', express.static('dist'))
 app.listen(PORT, () => {   
     console.log(`Server running on PORT ${PORT}`)
 })      

@@ -9,7 +9,6 @@ const{
     modelAllProductsCategory,
     modelAllProductsForRedis
 } = require('../models/products')
-// const { convertToRupiah } = require('../helpers/currency')
 const { success, failed, notFound } = require('../helpers/response')
 const redisClient = require('../config/redis')
 const fs = require('fs')
@@ -50,12 +49,12 @@ module.exports = {
                     notFound(res,"Data unavailable", data)
                 }
             }).catch((err)=>{
-                // failed(res, 'Internal server error', err)
-                console.log(err)
+                failed(res, 'Internal server error', err)
+                // console.log(err)
             })
         } catch (error) {
-            // failed(res, 'Internal server error', [])
-            console.log(error)
+            failed(res, 'Internal server error', [])
+            // console.log(error)
         }
     },
     getDetailProducts: (req, res)=>{
@@ -84,15 +83,16 @@ module.exports = {
                 image: req.body.image,
                 price: req.body.price,
                 id_category: req.body.id_category,
-                images: req.file.filename   // from single upload multer
+                // images: req.file.filename   // from single upload multer
             }
-            // res.json({   // to check multer
-            //     status: true,
-            //     multer: req.file.filename
-            // })
+            if(req.file){
+                data.images = req.file.filename
+            }
             if(!data.name || !data.image || !data.price || !data.id_category || !data.images){
                 const path = `./public/images/${data.images}`
-                fs.unlinkSync(path)
+                if (fs.existsSync(path)) {
+                    fs.unlinkSync(path)
+                }
                 failed(res, 'All textfield is required!', [])
 
             }else{
@@ -105,7 +105,8 @@ module.exports = {
                 })
             }
         } catch (error) {
-            failed(res, 'Internal server error', [])
+            // failed(res, 'Internal server error', [])
+            console.log(error)
         }
     },
     updateProducts: async (req, res)=>{
@@ -143,6 +144,7 @@ module.exports = {
             const data = req.body
             const id = req.params.id
             const detail = await modelDetailProducts(id)
+            data.images = detail[0].images
             if(req.file){
                 data.images = req.file.filename
                 // const path = `${process.cwd()}/public/images/${detail[0].images}`
@@ -157,7 +159,7 @@ module.exports = {
                 module.exports.setDataRedis()
                 success(res, response, {}, 'Update product success')
             }).catch((err)=>{
-                failed(res, 'Please input all field!', [])
+                failed(res, 'Internal server error', [])
             }) 
         } catch (error) {
             failed(res, 'Internal server error', [])

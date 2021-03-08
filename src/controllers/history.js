@@ -48,12 +48,12 @@ module.exports = {
                     notFound(res,"Data unavailable", data)
                 }
             }).catch((err)=>{
-                // failed(res, 'Internal server error', [])
-                console.log(err)
+                failed(res, 'Internal server error', [])
+                // console.log(err)
             })
         } catch (error) {
-            // failed(res, 'Internal server error', [])
-            console.log(error)
+            failed(res, 'Internal server error', [])
+            // console.log(error)
         }
     },
     getDetailHistory: (req, res)=>{
