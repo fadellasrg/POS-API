@@ -4,7 +4,7 @@ const express = require('express')
 const Router = express.Router()
 
 Router
-    .post('/login', login)
-    .post('/register', register)
+    .post('/api/login', login)
+    .post('/api/register', register)
 
 module.exports= Router
