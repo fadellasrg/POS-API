@@ -30,4 +30,4 @@ This is the backend service for this app. You can see the frontend service [here
 ## Documentation
 - [Postman](https://documenter.getpostman.com/view/13713483/TWDfDDVo)
 - [Frontend](https://github.com/fadellasrg/POS-Web)
-- [Deploy]
+- [Deploy](http://bit.ly/MugsCoffee)
